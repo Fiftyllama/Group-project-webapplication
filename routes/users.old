@@ -4,7 +4,7 @@ const path = require('path');
 const bodyParser = require('body-parser')
 const bcrypt = require('bcryptjs');
 const expressValidator = require('express-validator');
-const dbt = require('../models/DBfunc.js');
+const config = require('../config/database')
 const passport = require('passport');
 const flash = require('connect-flash');
 
@@ -34,40 +34,43 @@ router.post('/register', function(req, res, next) {
   const email = req.body.email;
   const password = req.body.password;
   const password2 = req.body.password2;
-  const address = req.body.address;
-  const phonenumber = req.body.phoneNo;
-  const firstname = req.body.name1;
-  const lastname = req.body.name2;
-
 
   req.checkBody('username', 'Name is required').notEmpty();
   req.checkBody('email', 'Email is required').notEmpty();
   req.checkBody('email', 'Email is not valid').isEmail();
   req.checkBody('password', 'Password is required').notEmpty();
   req.checkBody('password2', 'Password do not match').equals(req.body.password);
-  req.checkBody('address', 'Address is required').notEmpty();
-  req.checkBody('phoneNo', 'phonenumber is required').notEmpty();
-  req.checkBody('name1', 'firstname is required').notEmpty();
-  req.checkBody('name2', 'lastname is required').notEmpty();
 
   let errors = req.validationErrors();
-  usercookie = 'testcookie'
+
   if (errors) {
     console.log(errors);
-  }else
-  var passwordhash = bcrypt.hashSync(password, 10);
-  //just for testing
-  console.log("password: "+passwordhash);
-  console.log("username: "+username);
-  console.log("address: "+address);
-  console.log("lastname: "+lastname);
-  console.log("firstname: "+firstname);
-  console.log("phonenumber: "+phonenumber);
-  console.log("email: "+email);
+  }else {
+    let newUser = new User({
+      username:username,
+      email:email,
+      password:password
+    });
 
-  dbt.NewUser(username,email,passwordhash,address,phonenumber,firstname,lastname)
+    bcrypt.genSalt(10, function(err, salt) {
+      bcrypt.hash(newUser.password, salt, function(err, hash) {
+        if(err){
+          console.log(err);
+        }
+        newUser.password = hash;
+        newUser.save(function(err){
+          if(err){
+            console.log(err);
+            return;
+          }else {
+            console.log('You are now registered and can log in');
+            res.redirect('/users/clarifySign');
+          }
+        });
+      });
+    });
+  }
 });
-
 
 // Passport config
 require('../config/passport')(passport);

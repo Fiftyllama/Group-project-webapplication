@@ -56,25 +56,7 @@ router.use(expressValidator({
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', {
-    title: 'Encryption/Decryption Tools' });
-});
-
-router.get('/CaesarCipher', function(req, res, next) {
-  res.render('CaesarCipher', {
-    title: 'Caesar Cipher'
-  });
-});
-
-router.get('/MorseCode', function(req, res, next) {
-  res.render('MorseCode', {
-    title: 'Morse Code'
-  });
-});
-
-router.get('/BruteForce', function(req, res, next) {
-  res.render('BruteForce', {
-    title: 'Brute Force Attck with Caesar Cipher'
-  });
+    title: 'E-commerce' });
 });
 
 module.exports = router;
